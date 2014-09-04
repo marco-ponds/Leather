@@ -1,0 +1,165 @@
+var plane, plane2, sphere;
+var positions = [];
+
+function onCreate() {
+	//Universe.addRandomCube();
+	//disabling user input
+	core.camera.position.set(0,3,5)
+	core.camera.rotation.set(-0.5,0,0)
+
+
+	var plane_geom = new THREE.PlaneGeometry(1.5,1.5);
+	var material = new THREE.MeshBasicMaterial({color:0xff0000, wireframe: false});
+	plane = new THREE.Mesh(plane_geom, material);
+	plane.rotation.x = 0;
+	plane.position.x = 0;
+	plane.position.y = 0;
+	plane.auto_render = function() {
+		//plane.rotation.x += 0.001;
+	};
+
+	var material2 = new THREE.MeshBasicMaterial({color:0xffff00, wireframe: false});
+	plane2 = new THREE.Mesh(plane_geom, material2);
+	plane2.rotation.x = 0;
+	plane2.position.x = 1.5;
+	plane2.position.y = 0;
+	plane2.auto_render = function() {
+		//plane.rotation.x += 0.001;
+	};
+
+	var s_geometry = new THREE.SphereGeometry( 0.1, 20, 20 );
+	var s_material = new THREE.MeshNormalMaterial( {color: 0x00ff00} );
+	sphere = new Physijs.SphereMesh( s_geometry, s_material );
+	sphere.angle = 0.1;
+	sphere.prev = 0;
+	sphere.isJumpingRight = false;
+	sphere.isJumpingLeft = false;
+	sphere.isJumpingUp = false;
+	sphere.isJumpingDown = false;
+	sphere.position.x = 0;
+	sphere.position.y = 0;
+	sphere.position.z = 0;
+
+	sphere.auto_render = function() {
+		
+		//var parsed_y = Math.floor(_parseFloat(this.position.y)) == 0 ? _parseFloat(this.position.y)+0.1 : _parseFloat(this.position.y);
+		//var parsed_x = Math.floor(_parseFloat(this.position.x)) == 0 ? _parseFloat(this.position.x)+0.1 : _parseFloat(this.position.x);
+		
+
+		//var parsed_y = this.position.y == 0 ? _parseFloat("0.1") : _parseFloat(this.position.y);
+		//var parsed_x = this.position.x == 0 ? _parseFloat("0.1") : _parseFloat(this.position.x);
+
+		//l(this.position);
+		//l(parsed_x + " - " + parsed_y);
+/*
+		if (this.isJumpingRight) {
+			this.position.x += 0.05;//0.05*(Math.sin(this.angle));
+			//this.position.y = Math.abs(Math.sin(this.position.x*2));			
+		} else if (this.isJumpingLeft) {
+			this.position.x -= 0.05;//0.05*(Math.sin(this.angle));
+			//this.position.y = Math.abs(Math.sin(this.position.x*2));
+			
+		} else if (this.isJumpingUp) {
+			this.position.z -= 0.05;//0.05*(Math.sin(this.angle));
+			//this.position.y = Math.abs(Math.sin(this.position.z*2));
+			
+		} else if (this.isJumpingDown) {
+			this.position.z += 0.05;//0.05*(Math.sin(this.angle));
+			//this.position.y = Math.abs(Math.sin(this.position.z*2));
+			
+		} else {
+			this.position.y = Math.abs(Math.sin(this.angle));
+		}
+*/
+		/*
+
+		if (((parsed_x%1.5)==0) && (parsed_x != this.prev) && (this.isJumping)) {
+			l(this.position);
+			l(parsed_x + " - " + parsed_y);
+			this.prev = parsed_x;
+			this.position.y = 0;
+			this.angle = 0.1;
+			this.isJumping = false;
+		}
+		*/
+		this.angle += 0.1;
+		core.camera.position.x = this.position.x;
+		core.camera.position.z = this.position.z+5;
+
+	};
+
+	
+	for (var i=0; i<10; i++) { 
+		// create a cube, 1 unit for width, height, depth
+		var geometry = new THREE.CubeGeometry(1.5,1.5,1.5);
+
+		// each cube side gets another color
+		var cubeMaterials = [ 
+		    new THREE.MeshNormalMaterial({color:0x33AA55, transparent:true, opacity:0.8}),
+		    new THREE.MeshNormalMaterial({color:0x55CC00, transparent:true, opacity:0.8}), 
+		    new THREE.MeshNormalMaterial({color:0x000000, transparent:true, opacity:0.8}),
+		    new THREE.MeshNormalMaterial({color:0x000000, transparent:true, opacity:0.8}), 
+		    new THREE.MeshNormalMaterial({color:0x0000FF, transparent:true, opacity:0.8}), 
+		    new THREE.MeshNormalMaterial({color:0x5555AA, transparent:true, opacity:0.8}), 
+		]; 
+		// create a MeshFaceMaterial, allows cube to have different materials on each face 
+		var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials); 
+		var cube = new THREE.Mesh(geometry, cubeMaterial);
+		//var cube = new Physijs.BoxMesh(geometry, cubeMaterial)
+		cube.auto_render = function() {
+			this.scale.y = Math.abs(Math.sin(sphere.angle));
+		};
+		cube.position.set((i*1.5),0,0);
+		core.add(cube);
+ 	}
+
+
+	core.add(sphere);
+	//core.add(plane);
+	//core.add(plane2);
+	
+}
+
+function _parseFloat(value) {
+	return parseFloat((""+value).split(".")[0] + "." + (""+value).split(".")[1][0])
+}
+
+input.keydown = function(event) {
+	//l("keydown");
+	//l(event);
+	switch(event.keyCode) {
+		case 37:
+			//left
+			sphere.isJumpingRight = false;
+			sphere.isJumpingLeft = true;
+			sphere.isJumpingUp = false;
+			sphere.isJumpingDown = false;			
+			break;
+		case 38:
+			//up
+			sphere.isJumpingRight = false;
+			sphere.isJumpingLeft = false;
+			sphere.isJumpingUp = true;
+			sphere.isJumpingDown = false;
+			break;
+		case 39:
+			//right
+			sphere.isJumpingRight = true;
+			sphere.isJumpingLeft = false;
+			sphere.isJumpingUp = false;
+			sphere.isJumpingDown = false;			
+			break;
+		case 40:
+			//down
+			sphere.isJumpingRight = false;
+			sphere.isJumpingLeft = false;
+			sphere.isJumpingUp = false;
+			sphere.isJumpingDown = true;
+			break;
+	}
+}
+
+input.keyup = function(event) {
+	//l("keyup");
+	//l(event);
+}
