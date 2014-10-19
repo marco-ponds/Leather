@@ -139,8 +139,8 @@ function onCreate() {
 		        hands[0].mesh.scale.set(0.2,0.2,0.2);
 		        hands[0].mesh._render = function() {
 					//l(hands[0].position);
-					this.position.set(hands[0].position[0] - 6, -hands[0].position[1], hands[0].position[2]);
-					this.rotation.z = hands[0].roll;
+					//this.position.set(hands[0].position[0] - 6, -hands[0].position[1], hands[0].position[2]);
+					//this.rotation.z = hands[0].roll;
 				};
 		        core.add(hands[0].mesh);
 		    }
@@ -163,7 +163,7 @@ function onCreate() {
 		};
 
 		*/
-		/*
+		
 		for (var i=0; i<10; i++) {
 			var s_geometry = new THREE.SphereGeometry( 0.1, 20, 20 );
 			var s_material = new THREE.MeshNormalMaterial( {color: 0x00ff00} );
@@ -171,13 +171,13 @@ function onCreate() {
 				hands[0].fingers[i].mesh = new THREE.Mesh(s_geometry, s_material);
 				hands[0].fingers[i].mesh._index = i;
 				hands[0].fingers[i].mesh._render = function() {
-					if (hands[0].fingers[this._index].position!=undefined) {
+					/*if (hands[0].fingers[this._index].position!=undefined) {
 						//setting visibility to true
 						this.visibility = true;
 						this.position.set(hands[0].fingers[this._index].position[0], hands[0].fingers[this._index].position[1] , hands[0].fingers[this._index].position[2]);
 					} else {
 						this.visibility = false;
-					}
+					}*/
 				}
 				hands[0].fingers[i].mesh.visibility = false;
 				core.add(hands[0].fingers[i].mesh);
@@ -185,19 +185,19 @@ function onCreate() {
 				hands[1].fingers[i-5].mesh = new THREE.Mesh(s_geometry, s_material);
 				hands[1].fingers[i-5].mesh._index = i-5;
 				hands[1].fingers[i-5].mesh._render = function() {
-					if (hands[1].fingers[this._index].position!=undefined) {
+					/*if (hands[1].fingers[this._index].position!=undefined) {
 						//setting visibility to true
 						this.visibility = true;
 						this.position.set(hands[1].fingers[this._index].position[0], hands[1].fingers[this._index].position[1], hands[1].fingers[this._index].position[2]);
 					} else {
 						this.visibility = false;
-					}
+					}*/
 				}
 				hands[1].fingers[i-5].mesh.visibility = false;
 				core.add(hands[1].fingers[i-5].mesh);
 			}
 		}
-		*/
+		
 
 		//core.add(cube);
 		//core.add(hands[0].mesh);
@@ -231,20 +231,27 @@ function setUpLeap() {
 		frame.hands.forEach(function(hand, index) {
 			var pos = hand.screenPosition();
 			if (index in hands) {
-				hands[index].position = _.each(pos, function(e,i,l) {pos[i] = pos[i]/100;});
+				//OLD CODE
+				//hands[index].position = _.each(pos, function(e,i,l) {pos[i] = pos[i]/100;})
+				//hands[index].roll = hand.roll();
+
+				//NEW CODE
+				hands[index].mesh.position.set(pos[0] - 6, pos[1], pos[2]);
+				hands[index].mesh.rotation.z = hand.roll();
 				//pos =  _.each(pos, function(e,i,l) {pos[i] = pos[i]/100;});
 				//hands[index].mesh.position.set(pos[0] -6, -pos[1], pos[2]);
-				hands[index].roll = hand.roll();
 				//get every finger
 				var fingers = hand.fingers;
-				l("fingers length " + fingers.length, "i");
 				for (var i=0; i< 5; i++) {
 					if (i >= fingers.length) {
 						//non è un dito visibile
-						hands[index].fingers[i].position = undefined;
+						//hands[index].fingers[i].position = undefined;
+						hands[index].fingers[i].mesh.visibility = false;
 					} else {
 						var f_pos = fingers[i].tipPosition;
-						hands[index].fingers[i].position = _.each(f_pos, function(e,i,l) {f_pos[i] = f_pos[i]/100;});
+						//hands[index].fingers[i].position = _.each(f_pos, function(e,i,l) {f_pos[i] = f_pos[i]/100;});
+						hands[index].fingers[i].position.set(f_pos[0], f_pos[1], f_pos[2]);
+						hands[index].fingers[i].mesh.visibility = true;
 						if (!did) {
 							did = true;
 							l(fingers[i].tipPosition);
