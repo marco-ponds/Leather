@@ -1,4 +1,4 @@
-var mesh;
+var board;
 var cons = document.getElementById("console");
 var leapController;
 var hands = [
@@ -157,7 +157,7 @@ function onCreate() {
 			//this.position.set(hands[1].position[0] - 6, -hands[1].position[1], hands[1].position[2]);
 			//this.rotation.z = hands[1].roll;
 		};
-		core.add(hands[1].mesh);
+		//core.add(hands[1].mesh);
 
 		hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
 		hands[0].mesh.position.set(0,0,0);
@@ -168,7 +168,7 @@ function onCreate() {
 			//this.position.set(hands[0].position[0] - 6, -hands[0].position[1], hands[0].position[2]);
 			//this.rotation.z = hands[0].roll;
 		};
-		core.add(hands[0].mesh);
+		//core.add(hands[0].mesh);
 		//hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
 		//hands[1].mesh = new THREE.Mesh(geometry, cubeMaterial);
 		//var cube = new THREE.Mesh(geometry, cubeMaterial);
@@ -225,11 +225,22 @@ function onCreate() {
 		//core.add(cube);
 		//core.add(hands[0].mesh);
 		//core.add(hands[1].mesh);
-
+		drawGrid();
 
 
 		setUpLeap();
 
+}
+
+function drawGrid() {
+
+	var bottom = new THREE.Mesh(new THREE.PlaneGeometry(10,10), new THREE.MeshBasicMaterial({color:0x6e859f, side:THREE.DoubleSide}));
+	bottom.scale.set(2,0.2,1);
+	bottom.overdraw = true;
+	bottom.rotation.x = Math.PI/2;
+	//bottom.rotation.y = Math.PI / 2; //90 degrees
+	core.add(bottom);
+	bottom._render = function() {}
 }
 
 input.keydown = function(event) {
@@ -259,7 +270,7 @@ function setUpLeap() {
 				//hands[index].roll = hand.roll();
 
 				//NEW CODE
-				hands[index].mesh.position.set((pos[0]/100) - 6, -(pos[1]/100), (pos[2]/100));
+				hands[index].mesh.position.set((pos[0]/100), -(pos[1]/100), (pos[2]/100)-5);
 				hands[index].mesh.rotation.z = hand.roll();
 				//pos =  _.each(pos, function(e,i,l) {pos[i] = pos[i]/100;});
 				//hands[index].mesh.position.set(pos[0] -6, -pos[1], pos[2]);
@@ -273,7 +284,7 @@ function setUpLeap() {
 					} else {
 						var f_pos = fingers[i].tipPosition;
 						//hands[index].fingers[i].position = _.each(f_pos, function(e,i,l) {f_pos[i] = f_pos[i]/100;});
-						hands[index].fingers[i].mesh.position.set((f_pos[0]/100), (f_pos[1]/100), (f_pos[2]/100));
+						hands[index].fingers[i].mesh.position.set((f_pos[0]/50), (f_pos[1]/50), (f_pos[2]/50));
 						hands[index].fingers[i].mesh.visibility = true;
 						if (!did) {
 							did = true;
