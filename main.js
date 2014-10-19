@@ -113,6 +113,7 @@ function onCreate() {
 		var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials);
 		var loader = new THREE.JSONLoader(true);
 		//loading left hand
+		/*
 		loader.load(
 		    "models/left_hand.js",
 		    function(geometry,materials) {
@@ -145,6 +146,7 @@ function onCreate() {
 		        core.add(hands[0].mesh);
 		    }
 		);
+		*/
 
 		//hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
 		//hands[1].mesh = new THREE.Mesh(geometry, cubeMaterial);
@@ -236,7 +238,7 @@ function setUpLeap() {
 				//hands[index].roll = hand.roll();
 
 				//NEW CODE
-				hands[index].mesh.position.set(pos[0] - 6, pos[1], pos[2]);
+				hands[index].mesh.position.set((pos[0]/100) - 6, -(pos[1]/100), (pos[2]/100));
 				hands[index].mesh.rotation.z = hand.roll();
 				//pos =  _.each(pos, function(e,i,l) {pos[i] = pos[i]/100;});
 				//hands[index].mesh.position.set(pos[0] -6, -pos[1], pos[2]);
@@ -250,7 +252,7 @@ function setUpLeap() {
 					} else {
 						var f_pos = fingers[i].tipPosition;
 						//hands[index].fingers[i].position = _.each(f_pos, function(e,i,l) {f_pos[i] = f_pos[i]/100;});
-						hands[index].fingers[i].position.set(f_pos[0], f_pos[1], f_pos[2]);
+						hands[index].fingers[i].mesh.position.set(f_pos[0], f_pos[1], f_pos[2]);
 						hands[index].fingers[i].mesh.visibility = true;
 						if (!did) {
 							did = true;
