@@ -101,7 +101,7 @@ function onCreate() {
 		core.camera.position.y = 2;
 		core.camera.position.z = 6;
 
-		//var geometry = new THREE.CubeGeometry(1.5,1.5,1.5);
+		var geometry = new THREE.CubeGeometry(1.5,1.5,1.5);
 		var cubeMaterials = [
 		    new THREE.MeshNormalMaterial({color:0x33AA55, transparent:false}),
 		    new THREE.MeshNormalMaterial({color:0x55CC00, transparent:false}),
@@ -147,7 +147,28 @@ function onCreate() {
 		    }
 		);
 		*/
+		hands[1].mesh = new THREE.Mesh(geometry, cubeMaterial);
+		hands[1].mesh._render = function(){};
+		hands[1].mesh.position.set(0,0,0);
+		//hands[1].mesh.rotation.set(0,-90,0);
+		hands[1].mesh.scale.set(0.2,0.2,0.2);
+		hands[1].mesh._render = function() {
+			//l(hands[1].position);
+			//this.position.set(hands[1].position[0] - 6, -hands[1].position[1], hands[1].position[2]);
+			//this.rotation.z = hands[1].roll;
+		};
+		core.add(hands[1].mesh);
 
+		hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
+		hands[0].mesh.position.set(0,0,0);
+		//hands[0].mesh.rotation.set(0,-90,0);
+		hands[0].mesh.scale.set(0.2,0.2,0.2);
+		hands[0].mesh._render = function() {
+			//l(hands[0].position);
+			//this.position.set(hands[0].position[0] - 6, -hands[0].position[1], hands[0].position[2]);
+			//this.rotation.z = hands[0].roll;
+		};
+		core.add(hands[0].mesh);
 		//hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
 		//hands[1].mesh = new THREE.Mesh(geometry, cubeMaterial);
 		//var cube = new THREE.Mesh(geometry, cubeMaterial);
@@ -252,7 +273,7 @@ function setUpLeap() {
 					} else {
 						var f_pos = fingers[i].tipPosition;
 						//hands[index].fingers[i].position = _.each(f_pos, function(e,i,l) {f_pos[i] = f_pos[i]/100;});
-						hands[index].fingers[i].mesh.position.set(f_pos[0], f_pos[1], f_pos[2]);
+						hands[index].fingers[i].mesh.position.set((f_pos[0]/100), (f_pos[1]/100), (f_pos[2]/100));
 						hands[index].fingers[i].mesh.visibility = true;
 						if (!did) {
 							did = true;
