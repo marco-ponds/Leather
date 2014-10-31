@@ -67,6 +67,7 @@ var hands = [
 		]
 	}
 ];
+var info, palm, phalanges = [];
 
 
 function onLeapSocketConnected() {
@@ -89,6 +90,8 @@ progressAnimation = function(callback) {
 	});
 }
 
+var geometry, material, mesh, palms = [], phalanges = [];
+
 function onCreate() {
 	/***************
 		USAGE
@@ -98,137 +101,73 @@ function onCreate() {
 	****************/
 
 	//core.add(obj);
-		core.camera.position.y = 2;
-		core.camera.position.z = 6;
+	//core.camera.position.y = 2;
+	//core.camera.position.z = 6;
+	core.camera.position.set(0, 400, 600);
+	core.camera.lookAt(new THREE.Vector3(0,0, -200));
 
-		var geometry = new THREE.CubeGeometry(1.5,1.5,1.5);
-		var cubeMaterials = [
-		    new THREE.MeshNormalMaterial({color:0x33AA55, transparent:false}),
-		    new THREE.MeshNormalMaterial({color:0x55CC00, transparent:false}),
-		    new THREE.MeshNormalMaterial({color:0x000000, transparent:false}),
-		    new THREE.MeshNormalMaterial({color:0x000000, transparent:false}),
-		    new THREE.MeshNormalMaterial({color:0x0000FF, transparent:false}),
-		    new THREE.MeshNormalMaterial({color:0x5555AA, transparent:false}),
-		];
-		var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials);
-		var loader = new THREE.JSONLoader(true);
-		//loading left hand
-		/*
-		loader.load(
-		    "models/left_hand.js",
-		    function(geometry,materials) {
-		    	hands[1].mesh = new THREE.Mesh(geometry, cubeMaterial);
-		        hands[1].mesh._render = function(){};
-		        hands[1].mesh.position.set(0,0,0);
-		        //hands[1].mesh.rotation.set(0,-90,0);
-		        hands[1].mesh.scale.set(0.2,0.2,0.2);
-		        hands[1].mesh._render = function() {
-					//l(hands[1].position);
-					this.position.set(hands[1].position[0] - 6, -hands[1].position[1], hands[1].position[2]);
-					this.rotation.z = hands[1].roll;
-				};
-		        core.add(hands[1].mesh);
-		    }
-		);
-		//loading right hand
-		loader.load(
-		    "models/right_hand.js",
-		    function(geometry,materials) {
-		    	hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
-		        hands[0].mesh.position.set(0,0,0);
-		        //hands[0].mesh.rotation.set(0,-90,0);
-		        hands[0].mesh.scale.set(0.2,0.2,0.2);
-		        hands[0].mesh._render = function() {
-					//l(hands[0].position);
-					//this.position.set(hands[0].position[0] - 6, -hands[0].position[1], hands[0].position[2]);
-					//this.rotation.z = hands[0].roll;
-				};
-		        core.add(hands[0].mesh);
-		    }
-		);
-		*/
-		hands[1].mesh = new THREE.Mesh(geometry, cubeMaterial);
-		hands[1].mesh._render = function(){};
-		hands[1].mesh.position.set(0,0,0);
-		//hands[1].mesh.rotation.set(0,-90,0);
-		hands[1].mesh.scale.set(0.2,0.2,0.2);
-		hands[1].mesh._render = function() {
-			//l(hands[1].position);
-			//this.position.set(hands[1].position[0] - 6, -hands[1].position[1], hands[1].position[2]);
-			//this.rotation.z = hands[1].roll;
-		};
-		//core.add(hands[1].mesh);
+	console.log("inside onCreate");
 
-		hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
-		hands[0].mesh.position.set(0,0,0);
-		//hands[0].mesh.rotation.set(0,-90,0);
-		hands[0].mesh.scale.set(0.2,0.2,0.2);
-		hands[0].mesh._render = function() {
-			//l(hands[0].position);
-			//this.position.set(hands[0].position[0] - 6, -hands[0].position[1], hands[0].position[2]);
-			//this.rotation.z = hands[0].roll;
-		};
-		//core.add(hands[0].mesh);
-		//hands[0].mesh = new THREE.Mesh(geometry, cubeMaterial);
-		//hands[1].mesh = new THREE.Mesh(geometry, cubeMaterial);
-		//var cube = new THREE.Mesh(geometry, cubeMaterial);
-		/*
-		hands[0].mesh._render = function() {
-			//l(hands[0].position);
-			this.position.set(hands[0].position[0] - 6, -hands[0].position[1], hands[0].position[2]);
-			this.rotation.z = hands[0].roll;
-		};
-		hands[1].mesh._render = function() {
-			//l(hands[1].position);
-			this.position.set(hands[1].position[0] - 6, -hands[1].position[1], hands[1].position[2]);
-			this.rotation.z = hands[1].roll;
+	var light = new THREE.AmbientLight( 0x333333);
+	light.color.setHSL( 0.1, 0.5, 0.3 );
+	light._render = function() {};
+	core.add( light );
 
-		};
+	light = new THREE.DirectionalLight( 0xffffff, 1 );
+	light.position.set( 0, 500, 0 );
+	light.castShadow = true;
+	light.shadowMapWidth = 2048;
+	light.shadowMapHeight = 2048;
+	var d = 200;
+	light.shadowCameraLeft = -d;
+	light.shadowCameraRight = d;
+	light.shadowCameraTop = d * 2;
+	light.shadowCameraBottom = -d * 2;
 
-		*/
-		
-		for (var i=0; i<10; i++) {
-			var s_geometry = new THREE.SphereGeometry( 0.1, 20, 20 );
-			var s_material = new THREE.MeshNormalMaterial( {color: 0x00ff00} );
-			if (i<5) {
-				hands[0].fingers[i].mesh = new THREE.Mesh(s_geometry, s_material);
-				hands[0].fingers[i].mesh._index = i;
-				hands[0].fingers[i].mesh._render = function() {
-					/*if (hands[0].fingers[this._index].position!=undefined) {
-						//setting visibility to true
-						this.visibility = true;
-						this.position.set(hands[0].fingers[this._index].position[0], hands[0].fingers[this._index].position[1] , hands[0].fingers[this._index].position[2]);
-					} else {
-						this.visibility = false;
-					}*/
-				}
-				hands[0].fingers[i].mesh.visibility = false;
-				core.add(hands[0].fingers[i].mesh);
-			} else {
-				hands[1].fingers[i-5].mesh = new THREE.Mesh(s_geometry, s_material);
-				hands[1].fingers[i-5].mesh._index = i-5;
-				hands[1].fingers[i-5].mesh._render = function() {
-					/*if (hands[1].fingers[this._index].position!=undefined) {
-						//setting visibility to true
-						this.visibility = true;
-						this.position.set(hands[1].fingers[this._index].position[0], hands[1].fingers[this._index].position[1], hands[1].fingers[this._index].position[2]);
-					} else {
-						this.visibility = false;
-					}*/
-				}
-				hands[1].fingers[i-5].mesh.visibility = false;
-				core.add(hands[1].fingers[i-5].mesh);
-			}
-		}
-		
+	light.shadowCameraNear = 100;
+	light.shadowCameraFar = 600;
+	//light.shadowCameraVisible = true;
+	core.add( light );
+	console.log("created lights");
 
-		//core.add(cube);
-		//core.add(hands[0].mesh);
-		//core.add(hands[1].mesh);
-		drawGrid();
+	// ground plane
+	material = new THREE.MeshLambertMaterial( {color: 0xaaaaaa } );
+	geometry = new THREE.CubeGeometry( 600, 10, 300 );
+	mesh = new THREE.Mesh( geometry, material );
+	mesh.castShadow = true;
+	mesh.receiveShadow = true;
+	mesh._render = function(){};
+	core.add( mesh );
+	console.log("created ground plane");
+	// palm
+	geometry = new THREE.CubeGeometry( 80, 20, 80 );
+	geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -30 ) );  // to to +30 if using pitch roll & yaw
+	material = new THREE.MeshNormalMaterial();
+	var palm;
+	for (var i=0; i<2; i++) {
+		palm = new THREE.Mesh( geometry, material );
+		palm.castShadow = true;
+		palm.receiveShadow = true;
+		palm._render = function() {};
+		palms.push(palm);
+		core.add( palms[i]);
+	}
+	console.log("created palm");
+	// phalanges
+	geometry = new THREE.CubeGeometry( 16, 12, 1 );
+	for ( var i = 0; i < 30; i++) {
+		mesh = new THREE.Mesh( geometry, material );
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
+		mesh._render = function() {};
+		core.add( mesh );
+		phalanges.push( mesh );
+	}
+
+	console.log("created phalanges");
 
 
-		setUpLeap();
+	setUpLeap();
 
 }
 
@@ -252,51 +191,32 @@ input.keyup = function(event) {
 };
 var did = false;
 function setUpLeap() {
+	Leap.loop( function( frame ) {
+		var hand, phalanx, point, length;
+		for ( var i in frame.hands) {
+			hand = frame.hands[i];
+			palms[i].position.set( hand.palmPosition[0], hand.palmPosition[1], hand.palmPosition[2] );
+//			palm.rotation.set( hand.pitch(), -hand.yaw(), hand.roll() );
+			direction = new THREE.Vector3( hand.direction[0], hand.direction[1], hand.direction[2] );  // best so far
+			palms[i].lookAt( direction.add( palms[i].position ) );
+			palms[i].rotation.z = -hand.roll();
 
-	leapController = new Leap.Controller();
-
-	/********************
-		setting up leap
-	********************/
-	leapController.on("connect", onLeapSocketConnected);
-	leapController.on("deviceConnected", onLeapDeviceConnected);
-	leapController.on("deviceDisconnected", onLeapDeviceDisconnected);
-	Leap.loop(function(frame) {
-		frame.hands.forEach(function(hand, index) {
-			var pos = hand.screenPosition();
-			if (index in hands) {
-				//OLD CODE
-				//hands[index].position = _.each(pos, function(e,i,l) {pos[i] = pos[i]/100;})
-				//hands[index].roll = hand.roll();
-
-				//NEW CODE
-				hands[index].mesh.position.set((pos[0]/100), -(pos[1]/100), (pos[2]/100)-5);
-				hands[index].mesh.rotation.z = hand.roll();
-				//pos =  _.each(pos, function(e,i,l) {pos[i] = pos[i]/100;});
-				//hands[index].mesh.position.set(pos[0] -6, -pos[1], pos[2]);
-				//get every finger
-				var fingers = hand.fingers;
-				for (var i=0; i< 5; i++) {
-					if (i >= fingers.length) {
-						//non è un dito visibile
-						//hands[index].fingers[i].position = undefined;
-						hands[index].fingers[i].mesh.visibility = false;
-					} else {
-						var f_pos = fingers[i].tipPosition;
-						//hands[index].fingers[i].position = _.each(f_pos, function(e,i,l) {f_pos[i] = f_pos[i]/100;});
-						hands[index].fingers[i].mesh.position.set((f_pos[0]/50), (f_pos[1]/50), (f_pos[2]/50));
-						hands[index].fingers[i].mesh.visibility = true;
-						if (!did) {
-							did = true;
-							l(fingers[i].tipPosition);
-							l(hands[index].fingers[i].position);
-							l(hands[index].position);
-						}
-					}
-				}
+			//data.innerHTML = 'Hand X:' + hand.palmPosition[0].toFixed(0) + ' Y:' +  hand.palmPosition[1].toFixed(0) + ' Z:' + hand.palmPosition[2].toFixed(0);
+		}
+		iLen = frame.pointables.length;//( frame.pointables.length < 5 ) ? frame.pointables.length : 5;
+		for (var i = 0; i < iLen; i++) {
+			for ( var j = 0; j < 3; j++) {
+				phalanx = phalanges[ 3 * i + j];
+				point = frame.pointables[i].positions[j];
+				phalanx.position.set( point[0], point[1], point[2] );
+				point = frame.pointables[i].positions[ j + 1 ];
+				point = new THREE.Vector3( point[0], point[1], point[2] );
+				phalanx.lookAt( point );
+				length = phalanx.position.distanceTo( point );
+				phalanx.translateZ( 0.5 * length );
+				phalanx.scale.set( 1, 1, length );
 			}
-		});
-		// #num of fingers frame.fingers.length
+		}
 	});
 }
 
