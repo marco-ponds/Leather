@@ -106,7 +106,7 @@ function onCreate() {
 	core.camera.position.set(0, 400, 600);
 	core.camera.lookAt(new THREE.Vector3(0,0, -200));
 
-	console.log("inside onCreate");
+	//console.log("inside onCreate");
 
 	var light = new THREE.AmbientLight( 0x333333);
 	light.color.setHSL( 0.1, 0.5, 0.3 );
@@ -128,17 +128,18 @@ function onCreate() {
 	light.shadowCameraFar = 600;
 	//light.shadowCameraVisible = true;
 	core.add( light );
-	console.log("created lights");
+	//console.log("created lights");
 
 	// ground plane
 	material = new THREE.MeshLambertMaterial( {color: 0xaaaaaa } );
-	geometry = new THREE.CubeGeometry( 600, 10, 300 );
+	geometry = new THREE.CubeGeometry( 1000, 10, 1000 );
 	mesh = new THREE.Mesh( geometry, material );
+	//mesh = new Physijs.BoxMesh(geometry, material,0);
 	mesh.castShadow = true;
 	mesh.receiveShadow = true;
 	mesh._render = function(){};
 	core.add( mesh );
-	console.log("created ground plane");
+	//console.log("created ground plane");
 	// palm
 	geometry = new THREE.CubeGeometry( 80, 20, 80 );
 	geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -30 ) );  // to to +30 if using pitch roll & yaw
@@ -146,17 +147,20 @@ function onCreate() {
 	var palm;
 	for (var i=0; i<2; i++) {
 		palm = new THREE.Mesh( geometry, material );
+		//palm = new Physijs.BoxMesh(geometry, material);
 		palm.castShadow = true;
 		palm.receiveShadow = true;
+		palm.position.set(0,10,0);
 		palm._render = function() {};
 		palms.push(palm);
 		core.add( palms[i]);
 	}
-	console.log("created palm");
+	//console.log("created palm");
 	// phalanges
 	geometry = new THREE.CubeGeometry( 16, 12, 1 );
 	for ( var i = 0; i < 30; i++) {
 		mesh = new THREE.Mesh( geometry, material );
+		//mesh = new Physijs.BoxMesh(geometry, material);
 		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 		mesh._render = function() {};
@@ -164,7 +168,7 @@ function onCreate() {
 		phalanges.push( mesh );
 	}
 
-	console.log("created phalanges");
+	//console.log("created phalanges");
 
 
 	setUpLeap();
@@ -193,7 +197,8 @@ var did = false;
 function setUpLeap() {
 	Leap.loop( function( frame ) {
 		var hand, phalanx, point, length;
-		for ( var i in frame.hands) {
+		hlen = frame.hands.length;
+		for (var i=0; i<hlen; i++) {
 			hand = frame.hands[i];
 			palms[i].position.set( hand.palmPosition[0], hand.palmPosition[1], hand.palmPosition[2] );
 //			palm.rotation.set( hand.pitch(), -hand.yaw(), hand.roll() );
