@@ -1,7 +1,7 @@
 var config = {};
 
 config = {
-	physics_enabled : false,
+	physics_enabled : true,
 	tween_enabled : true,
 	cast_shadow : true,
 	camera : {
